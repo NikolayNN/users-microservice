@@ -12,7 +12,9 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.inject.Inject;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 /**
  *@author Olga Kulykova
@@ -53,7 +55,15 @@ public class UserController {
     @ResponseStatus(HttpStatus.OK)
     public List<UserDTO> getUsersUuidBySlack(@RequestBody UsersSlackRequest request){
         //this UserDTO should have fields: uuid, slack
-        List<UserDTO> users = userService.getUsersUuidBySlack(request);
+        List<String> slackNames = request.getSlackNames();
+        List<UserDTO> users = new ArrayList<>();
+        Random random = new Random();
+
+        for (String slackName : slackNames) {
+            String uuid = slackName + random.nextInt(Integer.MAX_VALUE);
+            uuid = uuid.replaceAll("@", "");
+            users.add(new UserDTO(uuid, slackName, null, null));
+        }
         logger.info("Get users uuid by slack completed: {}", users.toString());
         return users;
     }
